@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>China's Clean Tech Exports — a flow map</title>
+  <meta name="description" content="An interactive flow map of China's clean-tech exports, built on Ember data: the 2026 Africa solar surge, the Gulf slowdown, and the shift to batteries and EVs." />
+
+  <!-- Social share (Open Graph + Twitter) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="China's Clean Tech Exports — a flow map" />
+  <meta property="og:description" content="How China's clean-tech exports redrew the map in 2026: the Africa solar surge, the Strait of Hormuz slowdown, and the shift from panels to batteries and EVs." />
+  <meta property="og:url" content="https://chris-tine-wei.github.io/china-clean-tech-exports/" />
+  <meta property="og:image" content="https://chris-tine-wei.github.io/china-clean-tech-exports/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="China's Clean Tech Exports — a flow map" />
+  <meta name="twitter:description" content="An interactive flow map of China's clean-tech exports, built on Ember data." />
+  <meta name="twitter:image" content="https://chris-tine-wei.github.io/china-clean-tech-exports/og-image.png" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="map" role="img" aria-label="Dark globe with glowing teal arcs tracing China's solar PV exports outward to destination countries."></div>
+  <div class="vignette"></div>
+
+  <div class="titlebar"><b>China's Clean Tech Exports</b> <span class="titlebar-sub">&nbsp;·&nbsp; the solar silk road</span></div>
+
+  <div id="drag-hint">⤿ Drag to spin the globe</div>
+  <div id="tooltip" aria-hidden="true"></div>
+
+  <div id="tl-stamp" aria-hidden="true">
+    <div class="tl-stamp-month">Jan 2025</div>
+    <div class="tl-stamp-note">Africa solar +230% in a month</div>
+  </div>
+
+  <div id="timeline" aria-hidden="true">
+    <button id="tl-play" type="button" aria-label="Play or pause the timeline">❚❚</button>
+    <div class="tl-scrub">
+      <canvas id="tl-canvas" role="img" aria-label="Monthly solar export trend; drag to scrub through the months"></canvas>
+      <div class="tl-years"><span>2025</span><span>2026</span></div>
+    </div>
+  </div>
+
+  <nav class="progress" id="progress" aria-label="Story progress">
+    <button class="dot" data-go="0" aria-label="Step 1: China's reach"><span></span><em>China's reach</em></button>
+    <button class="dot" data-go="1" aria-label="Step 2: Africa surge"><span></span><em>Africa surge</em></button>
+    <button class="dot" data-go="2" aria-label="Step 3: Why now"><span></span><em>Why now</em></button>
+    <button class="dot" data-go="3" aria-label="Step 4: Gulf slowdown"><span></span><em>Gulf slowdown</em></button>
+    <button class="dot" data-go="4" aria-label="Step 5: Batteries &amp; EVs"><span></span><em>Batteries &amp; EVs</em></button>
+    <button class="dot" data-go="5" aria-label="Step 6: See it move"><span></span><em>See it move</em></button>
+  </nav>
+
+  <div class="legend" id="legend">
+    <div class="lg-title">Arc width = solar export value</div>
+    <div class="bars">
+      <span class="bar"><i style="height:8px"></i><b>~1 GW</b></span>
+      <span class="bar"><i style="height:15px"></i><b>~5 GW</b></span>
+      <span class="bar"><i style="height:22px"></i><b>~15 GW</b></span>
+      <span class="bar"><i style="height:26px"></i><b>30+ GW</b></span>
+    </div>
+    <div>Thicker, brighter arcs carry more US$ of Chinese solar PV per destination (GW est. at ~$0.10/W, last 12 months).</div>
+  </div>
+
+  <div class="source">
+    Data: <a href="https://ember-energy.org/data/china-cleantech-export-data/" target="_blank" rel="noopener">Ember — China Cleantech Export Data</a> (CC-BY-4.0).
+    Values in US$; GW figures are estimates at ~$0.10/W.
+  </div>
+
+  <div id="scrolly">
+    <section class="intro">
+      <h1>China's <span class="glow">clean-tech</span> exports,<br/>by the gigawatt</h1>
+      <p class="standfirst">China makes ~80% of the world's solar panels and battery cells, and ~70% of its electric cars. Every month, that capacity ships outward. This is where it goes, and how the map redrew itself in 2026.</p>
+      <p class="byline">By <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">Christine Peng</a> &nbsp;·&nbsp; data &amp; visual story</p>
+      <div class="scroll-cue">Scroll to begin<span>↓</span></div>
+    </section>
+
+    <article>
+      <!-- Step 0: dominance -->
+      <div class="step" data-step="0">
+        <div class="card">
+          <p class="eyebrow">The exporter</p>
+          <h2>One country, almost every panel</h2>
+          <p>These glowing arcs trace Chinese <strong>solar PV</strong> exports to their destinations over the last 12 months. The Netherlands (Europe's import gateway), India, Indonesia and the Philippines pull the most.</p>
+          <p>Arcs are sized by export value. At about <span class="stat">$0.10 a watt</span>, <span class="stat">$100M</span> of panels is roughly <span class="stat">1 GW</span>, so the dollars and gigawatts ahead are one story in two units.</p>
+          <p>No single rival appears on this map: the flows all originate from one place.</p>
+        </div>
+      </div>
+
+      <!-- Step 1: Africa spike -->
+      <div class="step" data-step="1">
+        <div class="card">
+          <p class="eyebrow">The 2026 surge</p>
+          <h2>Africa lights up</h2>
+          <p>In <span class="stat">March 2026</span>, Chinese solar exports to Africa jumped to <span class="stat">$685M</span> in a single month, more than triple February.</p>
+          <p>The surge was led by <span class="stat">Nigeria ($98M)</span>, <span class="stat">Kenya ($94M)</span> and <span class="stat">Ethiopia ($67M)</span>, each taking close to <span class="stat">a gigawatt</span> of panels in a single month at prevailing prices.</p>
+        </div>
+      </div>
+
+      <!-- Step 2: the drivers -->
+      <div class="step" data-step="2">
+        <div class="card">
+          <p class="eyebrow">Why now</p>
+          <h2>Two forces behind the rush</h2>
+          <p>The <span class="stat">US–Israel war with Iran</span> spiked fossil fuel prices worldwide, pushing the countries most exposed to energy costs to sprint toward solar.</p>
+          <p>At the same time, China moved to scrap its <span class="stat">9% VAT export rebate on April 1, 2026</span>, triggering a global front-loading rush to lock in cheaper panels before the deadline.</p>
+        </div>
+      </div>
+
+      <!-- Step 3: Middle East slowdown -->
+      <div class="step" data-step="3">
+        <div class="card">
+          <p class="eyebrow">The disruption</p>
+          <h2>The Gulf goes dark</h2>
+          <p>As Africa surged, the Middle East collapsed. Solar imports fell from a <span class="stat">$286M</span> peak (Sept 2025) to <span class="stat">$93M</span> by April 2026.</p>
+          <p>The timing tracks the <span class="stat">Strait of Hormuz</span> shutdown from late February 2026, when shipping through the Gulf seized up and cargoes were diverted.</p>
+          <div class="chartwrap">
+            <canvas id="me-chart" role="img" aria-label="Line chart of China's monthly solar exports, January 2025 to April 2026: Middle East imports decline sharply from late 2025 while Africa imports spike in early 2026."></canvas>
+            <div class="legend-row">
+              <span class="key"><span class="swatch" style="background:#2fe6d6"></span> Middle East</span>
+              <span class="key"><span class="swatch" style="background:#f4a93b"></span> Africa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: coda: EV/battery value -->
+      <div class="step" data-step="4">
+        <div class="card">
+          <p class="eyebrow">The bigger shift</p>
+          <h2>Solar grows, but dollars move to batteries &amp; EVs</h2>
+          <p>Solar's volume keeps climbing, yet in <em>value</em> it's now the small story. Each month China ships <span class="stat">2–4×</span> more <strong>batteries</strong> and <strong>EVs</strong> by dollar value than solar PV.</p>
+          <p>The export engine of the energy transition is shifting from panels to what stores and moves the power.</p>
+          <div class="chartwrap">
+            <canvas id="coda-chart" role="img" aria-label="Line chart comparing China's monthly export value of solar PV, batteries and EVs, 2025 to 2026: batteries and EVs run two to four times higher than solar by value."></canvas>
+            <div class="legend-row">
+              <span class="key"><span class="swatch" style="background:#2fe6d6"></span> Solar PV</span>
+              <span class="key"><span class="swatch" style="background:#9b8cff"></span> Batteries</span>
+              <span class="key"><span class="swatch" style="background:#f4a93b"></span> EVs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Step 5: timeline -->
+      <div class="step" data-step="5">
+        <div class="card">
+          <p class="eyebrow">See it move</p>
+          <h2>Sixteen months in motion</h2>
+          <p>Press play and watch the arcs breathe. Each frame is one month of Chinese solar exports, sized by value.</p>
+          <p>Hold for <span class="stat">March 2026</span>: Africa flares as the Gulf goes dark, the whole story in a single beat.</p>
+        </div>
+      </div>
+    </article>
+
+    <section class="outro">
+      <h2 class="outro-take">Watch the exports: they shift before the headlines do.</h2>
+      <p class="standfirst" style="font-size:1rem">Monthly customs data, updated by Ember within weeks of shipment, makes China's exports an early signal of where the energy transition is accelerating next.</p>
+      <p class="standfirst" style="font-size:0.92rem"><strong>Why some markets don't appear:</strong> The US faces 60%+ tariffs on Chinese solar, making direct exports commercially unviable. Russia, an energy exporter itself, imports little solar. The Middle East's collapse is shown above. South America (led by Brazil) and Australia do appear in the data and hit records in March, but are smaller in dollar value than Asia and Africa at this map scale.</p>
+      <p class="outro-links">
+        <a href="https://ember-energy.org/data/china-cleantech-export-data/" target="_blank" rel="noopener">Explore Ember's data →</a>
+        <a href="https://www.youtube.com/watch?v=tYnyAamblSo" target="_blank" rel="noopener">Watch: "China's investment in renewable energy pays off" (ABC News) →</a>
+        <button id="restart" class="restart" type="button">↑ Back to top</button>
+      </p>
+      <p class="byline">By <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">Christine Peng</a> &nbsp;·&nbsp; built with Mapbox GL &amp; Python</p>
+    </section>
+  </div>
+
+  <div id="token-warn">
+    <div class="box">
+      <h3>Add your Mapbox token</h3>
+      <p>This map needs a free Mapbox access token. Open <code>app.js</code> and replace
+      <code>MAPBOX_TOKEN</code> at the top with your public token (starts with <code>pk.</code>),
+      then reload. Get one at <code>account.mapbox.com</code>.</p>
+    </div>
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+  <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
