@@ -3,8 +3,6 @@
 [![Live demo](https://img.shields.io/badge/live%20demo-→%20open%20map-2fe6d6?style=flat-square)](https://chris-tine-wei.github.io/china-clean-tech-exports/)
 [![Data: Ember CC-BY-4.0](https://img.shields.io/badge/data-Ember%20CC--BY--4.0-orange?style=flat-square)](https://ember-energy.org/data/china-cleantech-export-data/)
 
-![Preview of the interactive flow map showing glowing teal arcs from China to countries around the world](og-image.png)
-
 An interactive globe of China's clean-tech exports — animated arcs, embedded charts, and a 16-month timeline you can scrub through. Built to tell a specific story: in March 2026, China's solar exports to Africa tripled in a single month. This is what that looks like.
 
 **[→ Open the live map](https://chris-tine-wei.github.io/china-clean-tech-exports/)** · **[→ Watch the walkthrough](https://www.youtube.com/watch?v=tYnyAamblSo)**
