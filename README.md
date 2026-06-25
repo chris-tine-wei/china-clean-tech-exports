@@ -1,77 +1,78 @@
 # China's Clean Tech Exports — a scrollytelling flow map
 
-**Live demo:** https://chris-tine-wei.github.io/china-clean-tech-exports/
+[![Live demo](https://img.shields.io/badge/live%20demo-→%20open%20map-2fe6d6?style=flat-square)](https://chris-tine-wei.github.io/china-clean-tech-exports/)
+[![Data: Ember CC-BY-4.0](https://img.shields.io/badge/data-Ember%20CC--BY--4.0-orange?style=flat-square)](https://ember-energy.org/data/china-cleantech-export-data/)
 
-An animated, dark "trade winds" flow map of China's clean-technology exports,
-built on [Ember's China Cleantech Export Data](https://ember-energy.org/data/china-cleantech-export-data/)
-(CC-BY-4.0). Glowing teal arcs run from China to each destination country, sized
-by solar-PV export value; a Scrollama narrative walks through the 2026 story.
+![Preview of the interactive flow map showing glowing teal arcs from China to countries around the world](og-image.png)
 
-## The story (4 steps)
+An interactive globe of China's clean-tech exports — animated arcs, embedded charts, and a 16-month timeline you can scrub through. Built to tell a specific story: in March 2026, China's solar exports to Africa tripled in a single month. This is what that looks like.
 
-1. **China's dominance** — one country supplies almost every panel on the map.
-2. **The Africa surge** — March 2026: exports to Africa hit **$685M** in a month
-   (≈3× February), led by **Nigeria, Kenya and Ethiopia** (~0.7–1 GW each).
-3. **The Gulf slowdown** — Middle East solar imports fall from a **$286M** peak
-   (Sep 2025) to **$93M** (Apr 2026), tracking the Strait of Hormuz shutdown.
-4. **The bigger shift** — solar keeps growing, but China now exports **2–4× more
-   batteries and EVs by dollar value** than solar PV.
+**[→ Open the live map](https://chris-tine-wei.github.io/china-clean-tech-exports/)** · **[→ Watch the walkthrough](https://www.youtube.com/watch?v=tYnyAamblSo)**
+
+---
+
+## The story
+
+The map walks through six chapters:
+
+1. **The Fact** — 80% of the world's solar panels are made in China. Every arc on the globe starts in the same place.
+2. **The Spike** — In March 2026, exports to Africa hit $685M — more than triple the month before.
+3. **Why It Happened** — A Middle East war pushed fuel prices up. China's 9% solar export tax rebate was ending April 1. Nigeria, Kenya and Ethiopia each pulled in close to a gigawatt of panels in a single month.
+4. **Gulf Goes Dark** — At the same moment, Middle East imports collapsed from $286M to $93M, tracking the Strait of Hormuz shutdown.
+5. **The Bigger Picture** — Solar is the small story. China ships 2–4× more batteries and EVs by dollar value than solar panels every month.
+6. **See It Move** — Press play and watch 16 months of exports animate. March 2026: Africa flares as the Gulf fades.
+
+---
+
+## Built with
+
+- [Mapbox GL JS v3.7](https://docs.mapbox.com/mapbox-gl-js/) — globe, arcs, and camera animation
+- [Scrollama v3.2](https://github.com/russellsamora/scrollama) — scroll-triggered narrative steps
+- [Chart.js](https://www.chartjs.org/) — embedded data charts
+- [Python / pandas](https://pandas.pydata.org/) — data reshaping from Ember's raw CSV
+
+
+---
 
 ## Run it locally
 
 ```bash
-# 1. Add your Mapbox token
-#    Open app.js and replace PASTE_YOUR_MAPBOX_TOKEN_HERE with your public token
-#    (starts with pk.). Free at https://account.mapbox.com/access-tokens/
+# 1. Get a free Mapbox token at https://account.mapbox.com/access-tokens/
+#    Open app.js and paste it as the MAPBOX_TOKEN value (starts with pk.)
 
-# 2. Serve the folder (fetch() of the JSON needs http://, not file://)
+# 2. Serve locally — fetch() requires http://, not file://
 python -m http.server 8000
 
 # 3. Open http://localhost:8000
 ```
 
-## Regenerate the data (optional)
+The narrative and charts work without a token. Only the globe requires one.
 
-`data/flows.json` ships ready to use. To rebuild it from the full raw dataset
-(monthly back to 2023, every destination), download the raw CSV once and run the
-reshape script:
+---
 
-1. From the [Ember page](https://ember-energy.org/data/china-cleantech-export-data/),
-   download **"China Cleantech Data – by technology category (CSV)"** and save it as
-   `data/clean_tech_exports_full_release_monthly.csv`.
+## Regenerate the data
+
+`data/flows.json` and `data/flows-monthly.json` ship ready to use. To rebuild from the full Ember dataset:
+
+1. Download **"China Cleantech Data – by technology category (CSV)"** from [Ember](https://ember-energy.org/data/china-cleantech-export-data/) and save as `data/clean_tech_exports_full_release_monthly.csv`
 2. Run:
-
-   ```bash
-   pip install pandas
-   python scripts/2026-06-17-reshape-exports.py
-   ```
-
-   This writes:
-   - `data/2026-06-17-reshaped-solar-by-destination.csv` — tidy long table
-     (`area, region, date, category, usd_value, solar_gw_est`)
-   - `data/flows.json` — the compact payload the map reads
-   - `data/flows-monthly.json` — per-country monthly values that drive the timeline scrubber
-
-## Files
-
-```
-index.html                              page + narrative steps
-style.css                               dark "trade winds" theme
-app.js                                  Mapbox GL + Turf arcs + Scrollama
-data/flows.json                         data the map reads
-data/country-centroids.json             static [lon,lat] lookup (no live geocoding)
-scripts/2026-06-17-reshape-exports.py   pandas: raw CSV -> tidy table + flows.json
+```bash
+pip install pandas
+python scripts/2026-06-17-reshape-exports.py
 ```
 
-## Deploy to GitHub Pages
+---
 
-The app is fully static. Push this folder to a repo and enable Pages
-(Settings → Pages → deploy from branch, root). No build step required.
+## Data
 
-## Notes on the numbers
+All export figures come from [Ember's China Cleantech Export Data](https://ember-energy.org/data/china-cleantech-export-data/), released under CC-BY-4.0.
 
-Ember's raw download reports export **value in US$**. GW figures shown are
-**estimates** using a single stated assumption (~$0.10/W, 2025 Chinese module
-export prices); the UI leads with dollar values, which are exact.
+Values are in US dollars. Gigawatt figures are estimates at ~$0.10/W (2025 Chinese module export prices) — the map leads with dollar values, which are exact.
 
-Data © Ember, released under CC-BY-4.0.
+---
+
+## About
+
+Built by [Christine Peng](https://www.linkedin.com/in/christine-peng/) as a data storytelling project at the intersection of climate, trade, and visualization.
+
+Questions or feedback? Open an issue or say hi on [LinkedIn](https://www.linkedin.com/in/christine-peng/).
