@@ -161,7 +161,7 @@ function applyWeights(stepIdx) {
 // build moving particle positions for the current phase, along the active arcs only
 function updateParticles(phase) {
   if (!ARC_FC || !MAP || !MAP.getSource("particles")) return;
-  const K = 3; // particles per arc
+  const K = window.innerWidth <= 680 ? 2 : 3; // fewer particles on mobile
   const feats = [];
   for (const arc of ARC_FC.features) {
     if (!(arc.properties.w > 0)) continue;
@@ -182,19 +182,21 @@ function updateParticles(phase) {
 // left padding so the map's focal point sits to the RIGHT of the text column
 function mapPadding() {
   const mobile = window.innerWidth <= 680;
-  return { left: mobile ? 0 : Math.min(window.innerWidth * 0.30, 340), top: 0, right: 0, bottom: 0 };
+  if (mobile) return { left: 0, top: 0, right: 0, bottom: 0 };   // map is its own top band on mobile
+  return { left: Math.min(window.innerWidth * 0.30, 340), top: 0, right: 0, bottom: 0 };
 }
 
 // the intro parks the globe in the top-right so it doesn't clash with the centred title
 function introRestPadding() {
   const W = window.innerWidth, H = window.innerHeight;
-  if (W <= 680) return { left: 0, top: 0, right: 0, bottom: Math.round(H * 0.48) };
+  if (W <= 680) return { left: 0, top: 0, right: 0, bottom: 0 };
   return { left: Math.round(W * 0.5), top: 0, right: 0, bottom: Math.round(H * 0.3) };
 }
 function easeToIntroRest(immediate) {
   if (!MAP) return;
+  const mob = window.innerWidth <= 680;
   MAP.easeTo({
-    center: [58, 24], zoom: 1.08,
+    center: mob ? [46, 18] : [58, 24], zoom: mob ? 1.2 : 1.08,
     padding: introRestPadding(),
     duration: immediate ? 0 : 1600,
     easing: (t) => 1 - Math.pow(1 - t, 3),
@@ -206,7 +208,7 @@ let dragHintShown = false;
 function showDragHint() {
   if (dragHintShown) return;
   const hint = document.getElementById("drag-hint");
-  if (!hint || window.matchMedia("(pointer: coarse)").matches) return;
+  if (!hint) return;
   dragHintShown = true;
   hint.classList.add("show");
   setTimeout(() => hint.classList.remove("show"), 9000);
@@ -251,10 +253,15 @@ function initMap() {
 
   // one-time "drag to spin" hint (desktop only; dismiss on first drag or after 6s)
   const hint = document.getElementById("drag-hint");
-  if (hint && window.matchMedia("(pointer: coarse)").matches) {
-    hint.style.display = "none";
-  } else if (hint) {
-    MAP.on("dragstart", () => hint.classList.remove("show"));
+  if (hint) {
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      // no drag-to-spin on touch: show only the "tap a point" line, reworded
+      hint.classList.add("touch");
+      const verb = hint.querySelector(".dh-verb");
+      if (verb) verb.textContent = "Tap";
+    } else {
+      MAP.on("dragstart", () => hint.classList.remove("show"));
+    }
   }
 
   ARC_FC = buildArcFeatures();
@@ -405,9 +412,8 @@ function initMap() {
     // hover tooltips on destination dots
     const tip = document.getElementById("tooltip");
     if (tip) {
-      MAP.on("mousemove", "pts-hit", (e) => {
-        const f = e.features[0].properties;
-        MAP.getCanvas().style.cursor = "pointer";
+      let tipTimer = null;
+      const fillTip = (f) => {
         if (f.origin === true || f.origin === "true") {
           tip.innerHTML = "<b>China</b><span>Export origin</span>";
         } else {
@@ -416,13 +422,33 @@ function initMap() {
           const gw = v / 100;
           tip.innerHTML = "<b>" + f.name + "</b><span>" + dollars + " solar &middot; ~" + (gw >= 1 ? gw.toFixed(1) : gw.toFixed(2)) + " GW (12 mo)</span>";
         }
-        tip.style.left = e.point.x + "px";
-        tip.style.top = e.point.y + "px";
+      };
+      const placeTip = (px, py) => {
+        tip.classList.toggle("left", px > window.innerWidth - 180);
+        tip.style.left = px + "px";
+        tip.style.top = py + "px";
         tip.classList.add("show");
+      };
+      // hover (desktop / fine pointer)
+      MAP.on("mousemove", "pts-hit", (e) => {
+        MAP.getCanvas().style.cursor = "pointer";
+        fillTip(e.features[0].properties);
+        placeTip(e.point.x, e.point.y);
       });
       MAP.on("mouseleave", "pts-hit", () => {
         MAP.getCanvas().style.cursor = "grab";
         tip.classList.remove("show");
+      });
+      // tap (touch): reveal a point's figures, then auto-dismiss
+      MAP.on("click", "pts-hit", (e) => {
+        fillTip(e.features[0].properties);
+        placeTip(e.point.x, e.point.y);
+        clearTimeout(tipTimer);
+        tipTimer = setTimeout(() => tip.classList.remove("show"), 4000);
+      });
+      MAP.on("click", (e) => {
+        const hit = MAP.queryRenderedFeatures(e.point, { layers: ["pts-hit"] });
+        if (!hit.length) tip.classList.remove("show");
       });
     }
 
@@ -467,19 +493,22 @@ function setupArcIgnition() {
   INTRO.active = true;
   INTRO.start = performance.now();
   const ENTRANCE = 3800;
+  const mobileNow = window.innerWidth <= 680;
   MAP.easeTo({
     center: [46, 18],
-    zoom: 1.5,
+    zoom: mobileNow ? 1.2 : 1.5,
     padding: { top: 0, right: 0, bottom: 0, left: 0 },   // entrance plays out centred
     duration: ENTRANCE,
     easing: (t) => 1 - Math.pow(1 - t, 3),
     essential: true,
   });
-  // sequence: entrance finishes -> park the globe top-right -> THEN the words appear
+  // sequence: entrance finishes -> (desktop) park top-right -> THEN the words appear.
+  // On mobile the narrative is below the map, so there's nothing to clear: skip the park.
   setTimeout(() => {
-    if (currentStep >= 0) { finishIntro(); return; }   // reader already scrolled in
-    easeToIntroRest(false);                             // glide to the corner (~1600ms)
-    setTimeout(finishIntro, 1500);                      // words + chrome once it parks
+    if (currentStep >= 0) { finishIntro(); return; }            // reader already scrolled in
+    if (window.innerWidth <= 680) { finishIntro(); return; }    // mobile: no park needed
+    easeToIntroRest(false);                                     // glide to the corner (~1600ms)
+    setTimeout(finishIntro, 1500);                             // words + chrome once it parks
   }, ENTRANCE + 100);
 }
 
@@ -605,10 +634,11 @@ function gotoStep(i, immediate) {
         ["interpolate", ["linear"], ["get", "w"], 0, 0, 0.05, dark ? 0.22 : 0.5, 1, dark ? 0.45 : 0.95]);
     }
 
+    const mob = window.innerWidth <= 680;
     MAP.flyTo({
       center: s.center,
-      zoom: s.zoom,
-      pitch: s.pitch,
+      zoom: mob ? s.zoom - (s.zoom > 2 ? 0.6 : 0.25) : s.zoom,
+      pitch: mob ? 0 : s.pitch,
       padding: mapPadding(),
       duration: immediate ? 0 : 2200,
       essential: true,
@@ -718,7 +748,7 @@ function drawScrubber() {
   if (!cv || !MONTHLY) return;
   const data = (FLOWS.worldByCatMonthly && FLOWS.worldByCatMonthly["Solar PV"]) || [];
   if (!data.length) return;
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = cv.clientWidth || 248, h = cv.clientHeight || 46;
   cv.width = w * dpr; cv.height = h * dpr;
   const ctx = cv.getContext("2d");
@@ -790,7 +820,7 @@ function tlLeave() {
 // and disabled under prefers-reduced-motion so no one gets trapped.
 function engageHold() {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || HOLD.done || !MONTHLY) return;   // gate only once; never trap
+  if (reduce || HOLD.done || !MONTHLY || window.innerWidth <= 680) return;   // no forced hold on mobile
   HOLD.active = true;
   const h = document.getElementById("hold");
   if (h) {
@@ -931,7 +961,7 @@ function initCharts() {
 function prepCanvas(id) {
   const cv = document.getElementById(id);
   if (!cv) return null;
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const w = cv.clientWidth || 340;
   const h = cv.clientHeight || 160;
   cv.width = w * dpr;

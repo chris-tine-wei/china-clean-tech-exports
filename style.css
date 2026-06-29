@@ -20,6 +20,7 @@ html, body {
   color: var(--ink);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 /* Fixed full-screen map sitting behind the narrative */
@@ -28,6 +29,7 @@ html, body {
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   background: radial-gradient(circle at 60% 35%, #0a1426 0%, #03060d 70%);
   z-index: 1;
 }
@@ -65,6 +67,7 @@ html, body {
 /* hero intro fills the viewport and centres its content vertically */
 .intro {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -81,6 +84,7 @@ html, body {
   text-shadow: 0 2px 30px rgba(0,0,0,0.7);
 }
 .intro h1 .glow { color: var(--accent); text-shadow: 0 0 24px rgba(47,230,214,0.55); }
+@media (max-width: 680px) { .intro h1 .brk { display: none; } }
 .intro .standfirst { font-size: 1.28rem; color: #e0f7f4; line-height: 1.7; letter-spacing: 0.01em; max-width: 55ch; margin-left: auto; margin-right: auto; text-wrap: balance; }
 .intro .scroll-cue { margin-top: 42px; color: var(--accent-soft); font-size: 0.85rem; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85; }
 .intro .scroll-cue span { display:block; font-size:1.4rem; margin-top:6px; animation: bob 1.8s ease-in-out infinite; }
@@ -127,6 +131,7 @@ html, body {
 }
 #drag-hint .dh-line { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 #drag-hint .dh-ic { font-size: 0.95rem; opacity: 0.95; width: 1em; text-align: center; }
+#drag-hint.touch .dh-drag { display: none; }
 #drag-hint.show { opacity: 1; box-shadow: 0 0 20px rgba(47,230,214,0.22); animation: dragnudge 1.9s ease-in-out infinite; }
 /* gentle sideways nudge to suggest "drag me" */
 @keyframes dragnudge {
@@ -134,7 +139,7 @@ html, body {
   50%      { transform: translateX(calc(-50% + 8px)); }
 }
 @media (prefers-reduced-motion: reduce) { #drag-hint.show { animation: none; } }
-@media (max-width: 680px) { #drag-hint { display: none; } }
+@media (max-width: 680px) { #drag-hint { left: 50%; top: 96px; bottom: auto; font-size: 0.82rem; padding: 9px 14px; } }
 
 #tooltip {
   position: fixed; z-index: 6; pointer-events: none;
@@ -147,6 +152,7 @@ html, body {
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 #tooltip.show { opacity: 1; }
+#tooltip.left { transform: translate(calc(-100% - 14px), -50%); }
 #tooltip b { display: block; color: var(--ink); font-size: 0.85rem; }
 #tooltip span { color: var(--accent-soft); font-size: 0.74rem; }
 
@@ -203,9 +209,13 @@ html, body {
 #tl-canvas { width: 248px; height: 46px; display: block; cursor: pointer; }
 .tl-years { display: flex; justify-content: space-between; font-size: 0.62rem; letter-spacing: 0.1em; color: var(--muted); padding: 0 2px; }
 @media (max-width: 680px) {
-  #timeline { left: 50%; bottom: 16px; top: auto; padding: 10px 14px; }
-  #tl-canvas { width: 180px; }
-  #tl-stamp { left: 50%; top: 108px; bottom: auto; }
+  /* timeline player pinned to the bottom of the map band; small bright month label above it */
+  #timeline { left: 50%; top: calc(52dvh - 66px); bottom: auto; padding: 9px 12px; }
+  #tl-canvas { width: 165px; }
+  #tl-play { width: 44px; height: 44px; }
+  #tl-stamp { left: 50%; top: calc(52dvh - 130px); bottom: auto; }
+  .tl-stamp-month { font-size: 1.4rem; color: rgba(122,240,230,0.85); }
+  .tl-stamp-note { display: none; }
 }
 
 article { position: relative; padding: 0 0 10vh; }
@@ -217,6 +227,7 @@ article { position: relative; padding: 0 0 10vh; }
   max-width: 380px;
   padding: 0 22px;
   min-height: 92vh;
+  min-height: 92dvh;
   display: flex;
   align-items: center;
 }
@@ -376,6 +387,12 @@ article { position: relative; padding: 0 0 10vh; }
 .lg-eyebrow { color: var(--accent); font-size: 0.6rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 7px; }
 .legend .lg-title { color: var(--accent-soft); font-weight: 600; font-size: 0.84rem; line-height: 1.25; letter-spacing: 0; margin-bottom: 9px; }
 .lg-note { margin-top: 7px; color: var(--muted); font-size: 0.69rem; line-height: 1.45; }
+.lg-mini { display: none; }
+@media (max-width: 680px) {
+  .lg-mini { display: block; margin: 12px 0 0 !important; padding-top: 10px; border-top: 1px solid var(--panel-border);
+    font-size: 0.82rem !important; line-height: 1.45; color: var(--muted) !important; }
+  .lg-mini b { color: var(--accent-soft); }
+}
 .legend .bars { display:flex; align-items:flex-end; gap:10px; margin-bottom: 6px;}
 .legend .bars .bar { display:flex; flex-direction:column; align-items:center; gap:4px; }
 .legend .bars i { display:block; width: 10px; background: var(--accent); border-radius: 2px 2px 0 0; box-shadow: 0 0 10px rgba(47,230,214,0.6); }
@@ -407,27 +424,43 @@ article { position: relative; padding: 0 0 10vh; }
 #token-warn p { color: #cdd9ea; line-height: 1.6; }
 
 @media (max-width: 680px) {
-  /* bottom-dock the cards so the top ~40% always shows the map */
+  /* ---- stacked single column: the map is a fixed band across the top, the
+         narrative flows beneath it in one column (no overlap) ---- */
+  #map { inset: 0 0 auto 0; width: 100vw; height: 52vh; height: 52dvh; z-index: 4; }
+  #cinematic { z-index: 5; }          /* keep the cold-open veil above the map band */
+  .vignette { display: none; }        /* left-dark gradient is a desktop-only legibility aid */
+  #scrolly { padding-top: 52vh; padding-top: 52dvh; }
+
+  /* intro + outro flow as normal blocks below the map (not full-height centred) */
+  .intro { min-height: 0; display: block; padding: 7vh 16px 5vh; }
+  .outro { padding: 7vh 16px; }
+
+  /* steps become full-width stacked blocks; the card sits just below the map band */
   .step {
     max-width: 100%;
-    margin: 0 auto;
-    min-height: 96vh;
-    align-items: flex-end;
-    padding: 0 14px 10vh;
+    margin: 0;
+    min-height: 85vh;
+    align-items: flex-start;
+    padding: 5vh 16px 6vh;
   }
-  .step .card { background: rgba(6, 13, 26, 0.92); padding: 18px 18px 16px; }
+  .step .card { background: rgba(8, 14, 28, 0.96); padding: 18px 18px 16px; }
   .step h2 { font-size: 1.3rem; }
+
   .legend, .source { display: none; }
   .titlebar-sub { display: none; }
-  /* compact bottom progress on mobile: dots only */
+
+  /* progress dots over the map band, top-centre */
   .progress {
-    right: 50%;
-    top: auto;
-    bottom: 14px;
-    transform: translateX(50%);
+    right: auto;
+    left: 50%;
+    top: calc(46px + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    transform: translateX(-50%);
     flex-direction: row;
-    gap: 14px;
+    gap: 6px;
+    z-index: 6;
   }
+  .progress .dot { padding: 13px 8px; }   /* ~40px tap target */
   .progress .dot em { display: none; }
 }
 
@@ -518,7 +551,17 @@ html.cine .intro.reveal > *,
 #hold.done .hold-label { color: var(--accent-soft); }
 #hold.done .hold-bar, #hold.done #hold-skip { display: none; }
 @media (max-width: 680px) {
-  #hold { top: 46px; gap: 8px; padding: 7px 10px; }
-  .hold-label { white-space: normal; font-size: 0.72rem; }
-  .hold-bar { width: 64px; }
+  #hold { display: none; }
+  #hold {
+    top: calc(78px + env(safe-area-inset-top, 0px));
+    left: 50%;
+    width: min(92vw, 360px);
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 10px;
+    padding: 10px 14px;
+  }
+  .hold-label { flex-basis: 100%; text-align: center; white-space: normal; font-size: 0.8rem; }
+  .hold-bar { width: 130px; }
+  #hold-skip { padding: 9px 16px; }
 }
