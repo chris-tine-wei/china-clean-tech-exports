@@ -468,6 +468,16 @@ function initMap() {
       setupArcIgnition();      // cold open: ignite the arcs, settle the globe top-right
     }
     startAnimations();
+
+    // The mobile layout puts the map in a fixed half-height band. iOS sizes the WebGL
+    // canvas to the dynamic viewport, so without a re-measure the globe renders for a
+    // taller canvas and its centre falls below the band. Force the map to re-fit.
+    const fixMapSize = () => { try { MAP.resize(); } catch (e) {} };
+    setTimeout(fixMapSize, 250);
+    setTimeout(fixMapSize, 1000);
+    setTimeout(fixMapSize, 2500);
+    window.addEventListener("orientationchange", () => setTimeout(fixMapSize, 300));
+    window.addEventListener("scroll", fixMapSize, { passive: true, once: true });
   });
 }
 
@@ -635,6 +645,7 @@ function gotoStep(i, immediate) {
     }
 
     const mob = window.innerWidth <= 680;
+    if (mob) { try { MAP.resize(); } catch (e) {} }   // keep canvas matched to the band
     MAP.flyTo({
       center: s.center,
       zoom: mob ? s.zoom - (s.zoom > 2 ? 0.6 : 0.25) : s.zoom,
