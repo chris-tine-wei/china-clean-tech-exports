@@ -31,8 +31,6 @@ The map walks through six chapters:
 - [Chart.js](https://www.chartjs.org/) — embedded data charts
 - [Python / pandas](https://pandas.pydata.org/) — data reshaping from Ember's raw CSV
 
-No framework, no build step. One HTML file, one JS file, one CSS file.
-
 ---
 
 ## Run it locally
