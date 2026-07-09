@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "source": "Ember — European Electricity Review 2026 (EU electricity mix, batteries); Ember China Cleantech Export Data; European Commission (EV tariffs)",
+    "source_url": "https://ember-energy.org/latest-insights/european-electricity-review-2026/",
+    "license": "CC-BY-4.0",
+    "note": "Hand-authored. EU-wide 2025 shares are exact from the Ember report (wind+solar 30.1%, fossil 29.0%; 2020 baselines 19.7% and 36.7%). The 2021-2025 crossover series uses Ember annual EU generation shares, rounded, ending at the report's exact 2025 crossover. California figures and EU battery GW are from the report's battery chapter. EV tariff figures are the EU's definitive countervailing duties on Chinese battery-EVs (in force 31 Oct 2024)."
+  },
+  "euWide": {
+    "windSolarShare2025": 30,
+    "fossilShare2025": 29,
+    "solarShare2025": 13,
+    "windShare2025": 17,
+    "renewablesShare2025": 48,
+    "coalShare2025": 9.2,
+    "solarTWh2025": 369,
+    "countriesWindSolarOverFossil": 14,
+    "gasImportBillEUR_bn": 32,
+    "batteriesGW2025": 10,
+    "batteriesGW2023": 4,
+    "pipelineGW": 40,
+    "solarLargestSourceJune2025": true,
+    "hoursWindSolarOver70pct_2025countries": 19,
+    "hoursWindSolarOver70pct_2020countries": 2
+  },
+  "crossover": {
+    "years": ["2021", "2022", "2023", "2024", "2025"],
+    "windSolar": [19, 22, 27, 29, 30],
+    "fossil": [37, 39, 33, 30, 29]
+  },
+  "california": {
+    "note": "Ember's analogy: Europe's battery fleet is where California's was in 2021.",
+    "years": ["2021", "2025"],
+    "batteryGW": [2, 13],
+    "eveningFossilShare": [44, 34],
+    "eveningBatteryShare": [3, 22]
+  },
+  "tariffs": {
+    "note": "EU definitive countervailing duties on Chinese battery-electric vehicles, in force 31 October 2024, on top of the standard 10% car import duty. Batteries themselves are not covered.",
+    "evDutyMinPct": 7.8,
+    "evDutyMaxPct": 35.3,
+    "baseCarDutyPct": 10,
+    "effectiveDate": "2024-10-31",
+    "companies": [
+      { "name": "Tesla (Shanghai)", "pct": 7.8 },
+      { "name": "BYD", "pct": 17.0 },
+      { "name": "Geely", "pct": 18.8 },
+      { "name": "SAIC", "pct": 35.3 }
+    ],
+    "chineseStorageBatteryExportGrowth2025Pct": 51,
+    "batteriesVsSolarMultiple": 2
+  }
+}

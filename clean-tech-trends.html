@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>China's Clean Tech Exports — three lines, one country</title>
+  <meta name="description" content="A scrollytelling chart of China's clean-tech export categories — solar PV, batteries and electric vehicles — revealed one line at a time. Built on Ember data." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="China's Clean Tech Exports — three lines, one country" />
+  <meta property="og:description" content="Solar gets the headlines. Batteries and EVs are the actual story. Scroll to watch all three lines appear." />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0a0f1a;            /* trade-winds dark */
+      --bg-deep: #060a12;
+      --ink: #e8eef7;
+      --muted: #8ba0bd;
+      --accent: #2fe6d6;        /* teal — Solar PV */
+      --accent-soft: #7af0e6;
+      --solar: #2fe6d6;
+      --batteries: #9b8cff;
+      --evs: #f4a93b;
+      --panel: rgba(8, 16, 30, 0.82);
+      --panel-border: rgba(47, 230, 214, 0.22);
+      --font: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg-deep);
+      color: var(--ink);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Fixed full-bleed chart sitting behind the narrative */
+    #chart-stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      background:
+        radial-gradient(circle at 64% 38%, #11203a 0%, #0a0f1a 58%, #060a12 100%);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .chart-frame {
+      width: 62vw;
+      max-width: 880px;
+      height: 64vh;
+      max-height: 560px;
+      margin-right: 5vw;
+      position: relative;
+    }
+    .chart-heading {
+      position: absolute;
+      top: -54px; left: 0;
+      pointer-events: none;
+    }
+    .chart-heading .ch-eyebrow {
+      color: var(--accent);
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin: 0 0 6px;
+    }
+    .chart-heading .ch-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    #chart-canvas { width: 100%; height: 100%; display: block; }
+
+    /* atmospheric vignette to keep cards legible over the chart */
+    .vignette {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: linear-gradient(90deg, rgba(6,10,18,0.86) 0%, rgba(6,10,18,0.25) 36%, rgba(6,10,18,0) 58%);
+    }
+
+    .titlebar {
+      position: fixed; top: 18px; left: 22px; z-index: 4;
+      font-size: 0.8rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); pointer-events: none;
+    }
+    .titlebar b { color: var(--ink); }
+    .titlebar-sub { color: var(--muted); }
+
+    /* ---------- Narrative ---------- */
+    #scrolly { position: relative; z-index: 3; pointer-events: none; }
+    .step .card, .intro a, .outro a, .outro .restart { pointer-events: auto; }
+
+    .intro, .outro {
+      position: relative; max-width: 720px; margin: 0 auto;
+      padding: 14vh 28px 8vh 28px; text-align: center;
+    }
+    .intro {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding-top: 5vh; padding-bottom: 5vh;
+    }
+    .intro h1 {
+      font-size: clamp(2.1rem, 5vw, 3.6rem); line-height: 1.04;
+      margin: 0 0 18px; letter-spacing: -0.02em;
+      text-shadow: 0 2px 30px rgba(0,0,0,0.7);
+    }
+    .intro h1 .glow { color: var(--accent); text-shadow: 0 0 24px rgba(47,230,214,0.55); }
+    .intro .standfirst {
+      font-size: 1.28rem; color: #e0f7f4; line-height: 1.7; letter-spacing: 0.01em;
+      max-width: 55ch; margin: 0 auto; text-wrap: balance;
+    }
+    .intro .scroll-cue {
+      margin-top: 42px; color: var(--accent-soft); font-size: 0.85rem;
+      letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.85;
+    }
+    .intro .scroll-cue span { display: block; font-size: 1.4rem; margin-top: 6px; animation: bob 1.8s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+
+    .byline { margin-top: 26px; color: var(--muted); font-size: 0.9rem; letter-spacing: 0.02em; }
+    .byline a { color: var(--accent-soft); text-decoration: none; border-bottom: 1px solid rgba(122,240,230,0.35); }
+
+    article { position: relative; padding: 0 0 10vh; }
+
+    .step {
+      margin: 0; margin-left: 4vw; max-width: 380px; padding: 0 22px;
+      min-height: 96vh; display: flex; align-items: center;
+    }
+    .step .card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 26px 26px 24px;
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+      opacity: 0.35; transform: translateY(14px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .step.is-active .card { opacity: 1; transform: translateY(0); }
+    .step .eyebrow {
+      color: var(--accent); font-size: 0.72rem; letter-spacing: 0.22em;
+      text-transform: uppercase; margin: 0 0 10px;
+    }
+    .step h2 { font-size: 1.5rem; line-height: 1.18; margin: 0 0 12px; letter-spacing: -0.01em; }
+    .step p { color: #cdd9ea; font-size: 1rem; line-height: 1.62; margin: 0 0 12px; }
+    .step p:last-child { margin-bottom: 0; }
+    .step .stat { color: var(--accent-soft); font-weight: 600; }
+    /* per-category accent on the active step's eyebrow */
+    .step[data-step="0"] .eyebrow { color: var(--solar); }
+    .step[data-step="1"] .eyebrow { color: var(--batteries); }
+    .step[data-step="2"] .eyebrow { color: var(--evs); }
+    .step[data-step="1"] .card { border-color: rgba(155,140,255,0.34); }
+    .step[data-step="2"] .card { border-color: rgba(244,169,59,0.34); }
+
+    /* legend chips inside cards */
+    .legend-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 14px; font-size: 0.78rem; color: var(--muted); }
+    .legend-row .key { display: inline-flex; align-items: center; gap: 6px; }
+    .legend-row .key.off { opacity: 0.35; }
+    .legend-row .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+    .outro { max-width: 640px; }
+    .outro .outro-take { font-size: clamp(1.4rem, 3vw, 2rem); line-height: 1.22; margin: 0 0 18px; letter-spacing: -0.01em; }
+    .restart {
+      background: rgba(47,230,214,0.12); border: 1px solid var(--panel-border);
+      color: var(--accent-soft); padding: 8px 16px; border-radius: 20px;
+      font-family: var(--font); font-size: 0.9rem; cursor: pointer; transition: background 0.25s ease;
+    }
+    .restart:hover { background: rgba(47,230,214,0.22); }
+
+    /* source credit, bottom right */
+    .source {
+      position: fixed; bottom: 16px; right: 18px; z-index: 4;
+      font-size: 0.68rem; color: rgba(139,160,189,0.75);
+      text-align: right; max-width: 260px; line-height: 1.4;
+    }
+    .source a { color: var(--accent-soft); text-decoration: none; }
+
+    @media (max-width: 760px) {
+      #chart-stage { align-items: flex-start; justify-content: center; }
+      .chart-frame { width: 92vw; height: 38vh; margin: 12vh 0 0; }
+      .chart-heading { top: -46px; }
+      .vignette { background: linear-gradient(180deg, rgba(6,10,18,0) 30%, rgba(6,10,18,0.9) 62%); }
+      .step {
+        max-width: 100%; margin: 0 auto; min-height: 98vh;
+        align-items: flex-end; padding: 0 14px 8vh;
+      }
+      .step .card { background: rgba(6, 13, 26, 0.92); padding: 18px 18px 16px; }
+      .step h2 { font-size: 1.3rem; }
+      .titlebar-sub, .source { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .intro .scroll-cue span { animation: none; }
+      .step .card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="chart-stage">
+    <div class="chart-frame">
+      <div class="chart-heading">
+        <p class="ch-eyebrow">China's clean-tech exports by category</p>
+        <p class="ch-title">Monthly export value · Jan 2025 – Apr 2026</p>
+      </div>
+      <canvas id="chart-canvas" role="img"
+        aria-label="Line chart of China's monthly clean-tech export value, January 2025 to April 2026. Solar PV runs near 2.6 billion dollars a month and spikes to 4.8 billion in March 2026; batteries run roughly three times higher; electric vehicles rise through 2026 to overtake solar."></canvas>
+    </div>
+  </div>
+  <div class="vignette"></div>
+
+  <div class="titlebar"><b>China's Clean Tech Exports</b> <span class="titlebar-sub">&nbsp;·&nbsp; three lines, one country</span></div>
+
+  <div id="scrolly">
+    <section class="intro">
+      <h1>The panels get the headlines.<br/><span class="glow">The other two</span> are the story.</h1>
+      <p class="standfirst">China's clean-tech exports come in three flavours — solar panels, batteries and electric cars. Scroll to bring each line onto the chart, one at a time.</p>
+      <p class="byline">By <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">Christine Peng</a> &nbsp;·&nbsp; mapping the energy transition</p>
+      <div class="scroll-cue">Scroll to begin<span>↓</span></div>
+    </section>
+
+    <article>
+      <div class="step" data-step="0">
+        <div class="card">
+          <p class="eyebrow">Solar PV</p>
+          <h2>Solar powers the story</h2>
+          <p>China ships around <span class="stat">$2.6B</span> of panels every month — and in <span class="stat">March 2026</span>, the Africa surge pushed it to <span class="stat">$4.8B</span>, the highest in the dataset.</p>
+          <div class="legend-row">
+            <span class="key" data-cat="0"><span class="swatch" style="background:var(--solar)"></span> Solar PV</span>
+            <span class="key off" data-cat="1"><span class="swatch" style="background:var(--batteries)"></span> Batteries</span>
+            <span class="key off" data-cat="2"><span class="swatch" style="background:var(--evs)"></span> EVs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-step="1">
+        <div class="card">
+          <p class="eyebrow">Batteries</p>
+          <h2>But batteries ship at nearly 3× the value</h2>
+          <p>Every single month. The world stores energy in Chinese batteries whether it knows it or not.</p>
+          <div class="legend-row">
+            <span class="key" data-cat="0"><span class="swatch" style="background:var(--solar)"></span> Solar PV</span>
+            <span class="key" data-cat="1"><span class="swatch" style="background:var(--batteries)"></span> Batteries</span>
+            <span class="key off" data-cat="2"><span class="swatch" style="background:var(--evs)"></span> EVs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-step="2">
+        <div class="card">
+          <p class="eyebrow">Electric vehicles</p>
+          <h2>Then add EVs</h2>
+          <p>By late 2026, electric cars alone are outpacing solar. Three lines. One country. The panels get the headlines — the other two are the actual story.</p>
+          <div class="legend-row">
+            <span class="key" data-cat="0"><span class="swatch" style="background:var(--solar)"></span> Solar PV</span>
+            <span class="key" data-cat="1"><span class="swatch" style="background:var(--batteries)"></span> Batteries</span>
+            <span class="key" data-cat="2"><span class="swatch" style="background:var(--evs)"></span> EVs</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <section class="outro">
+      <h2 class="outro-take">Solar is the small story.</h2>
+      <p class="standfirst" style="font-size:1rem">By dollar value, the panels everyone talks about are dwarfed by the batteries and electric cars that store and move the power. Three lines, one country — and two of them barely make the news.</p>
+      <p class="outro-links"><button id="restart" class="restart" type="button">↑ Back to top</button></p>
+      <p class="byline">By <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">Christine Peng</a> &nbsp;·&nbsp; data: <a href="https://ember-energy.org/data/china-cleantech-export-data/" target="_blank" rel="noopener">Ember</a></p>
+    </section>
+  </div>
+
+  <div class="source">Data: <a href="https://ember-energy.org/data/china-cleantech-export-data/" target="_blank" rel="noopener">Ember</a> (CC-BY-4.0)</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+  <script>
+  (function () {
+    // ---- Embedded data: USD millions per month, Jan 2025 – Apr 2026 ----
+    var MONTHS = ["2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04"];
+    var DATA = {
+      "Solar PV":  [2426,1793,2640,2417,2561,2375,2352,3089,2970,2427,2552,2508,2029,2156,4774,3262],
+      "Batteries": [6035,4449,6200,6603,6296,7060,7517,7616,7552,7381,7294,8066,7922,7176,10162,8422],
+      "EVs":       [4518,3064,4270,6014,6160,5275,5931,6475,6109,6811,6840,8140,7646,6505,6867,9102]
+    };
+    var COLORS = { "Solar PV": "#2fe6d6", "Batteries": "#9b8cff", "EVs": "#f4a93b" };
+    var ORDER = ["Solar PV", "Batteries", "EVs"]; // reveal order
+
+    function fmtMonth(iso) {
+      var m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      var p = iso.split("-");
+      var mn = m[parseInt(p[1], 10) - 1];
+      return p[1] === "01" ? (mn + " " + p[0]) : mn;
+    }
+
+    var prefersReduced = false;
+    try { prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+
+    var labels = MONTHS.map(fmtMonth);
+    var ctx = document.getElementById("chart-canvas").getContext("2d");
+
+    var datasets = ORDER.map(function (name) {
+      var c = COLORS[name];
+      return {
+        label: name,
+        data: DATA[name],
+        borderColor: c,
+        backgroundColor: c,
+        pointBackgroundColor: c,
+        pointBorderColor: c,
+        borderWidth: 2.6,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.32,
+        cubicInterpolationMode: "monotone",
+        hidden: true,                      // revealed step by step
+        fill: false
+      };
+    });
+
+    // soft per-line glow matching the trade-winds theme
+    var glow = {
+      id: "glow",
+      beforeDatasetDraw: function (chart, args) {
+        var c = chart.ctx;
+        c.save();
+        c.shadowColor = args.meta.dataset && args.meta.dataset.options
+          ? args.meta.dataset.options.borderColor
+          : "rgba(47,230,214,0.6)";
+        c.shadowBlur = 10;
+      },
+      afterDatasetDraw: function (chart) {
+        chart.ctx.restore();
+      }
+    };
+
+    var chart = new Chart(ctx, {
+      type: "line",
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: prefersReduced ? false : { duration: 850, easing: "easeOutCubic" },
+        interaction: { mode: "index", intersect: false },
+        layout: { padding: { top: 8, right: 12, bottom: 4, left: 4 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "rgba(8,16,30,0.94)",
+            borderColor: "rgba(47,230,214,0.3)",
+            borderWidth: 1,
+            titleColor: "#e8eef7",
+            bodyColor: "#cdd9ea",
+            padding: 10,
+            callbacks: {
+              label: function (item) {
+                return item.dataset.label + ": $" + item.parsed.y.toLocaleString() + "M";
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 11000,
+            title: { display: true, text: "US$ millions per month", color: "#8ba0bd", font: { family: "Inter", size: 12, weight: "500" } },
+            grid: { color: "rgba(139,160,189,0.12)", drawTicks: false },
+            border: { display: false },
+            ticks: {
+              color: "rgba(170,184,207,0.85)",
+              font: { family: "Inter", size: 11 },
+              padding: 8,
+              callback: function (v) { return v >= 1000 ? "$" + (v / 1000) + "k" : "$" + v; }
+            }
+          },
+          x: {
+            grid: { display: false },
+            border: { color: "rgba(139,160,189,0.3)" },
+            ticks: {
+              color: "rgba(170,184,207,0.85)",
+              font: { family: "Inter", size: 11 },
+              maxRotation: 0,
+              autoSkip: true,
+              autoSkipPadding: 16
+            }
+          }
+        }
+      },
+      plugins: [glow]
+    });
+
+    // ---- reveal logic: show datasets 0..stepIndex, hide the rest ----
+    function revealUpTo(stepIndex) {
+      for (var i = 0; i < datasets.length; i++) {
+        chart.setDatasetVisibility(i, i <= stepIndex);
+      }
+      chart.update();
+    }
+
+    function setActive(idx) {
+      var steps = document.querySelectorAll(".step");
+      for (var i = 0; i < steps.length; i++) {
+        steps[i].classList.toggle("is-active", i === idx);
+      }
+    }
+
+    // ---- Scrollama ----
+    var scroller = scrollama();
+    scroller
+      .setup({ step: ".step", offset: 0.6 })
+      .onStepEnter(function (resp) {
+        var idx = parseInt(resp.element.getAttribute("data-step"), 10);
+        setActive(idx);
+        revealUpTo(idx);
+      });
+
+    window.addEventListener("resize", scroller.resize);
+
+    // restart button
+    var rb = document.getElementById("restart");
+    if (rb) rb.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
+    });
+  })();
+  </script>
+</body>
+</html>

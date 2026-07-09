@@ -1,0 +1,5 @@
+# Netlify configuration for a plain static site (no build step).
+# Publishes the repo root, where index.html and demand.html live.
+[build]
+  publish = "."
+  command = ""

@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "source": "Ember China Cleantech Export Data (by technology category)",
+    "source_url": "https://ember-energy.org/data/china-cleantech-export-data/",
+    "license": "CC-BY-4.0",
+    "units": "USD millions",
+    "gw_assumption_usd_per_watt": 0.1,
+    "generated": "2026-06-17",
+    "latest_month": "2026-04-01",
+    "note": "China Solar PV exports by destination. Values are monthly export value in USD millions. This file was assembled from Ember aggregates; run scripts/2026-06-17-reshape-exports.py over the raw CSV to regenerate a fuller version (monthly from 2023).",
+    "is_sample": false
+  },
+  "months": ["2025-01-01","2025-02-01","2025-03-01","2025-04-01","2025-05-01","2025-06-01","2025-07-01","2025-08-01","2025-09-01","2025-10-01","2025-11-01","2025-12-01","2026-01-01","2026-02-01","2026-03-01","2026-04-01"],
+  "worldByCatMonthly": {
+    "Solar PV": [2426.0,1792.7,2639.6,2416.7,2560.6,2374.9,2352.5,3089.0,2969.9,2426.7,2552.5,2508.2,2028.9,2156.5,4773.9,3262.2],
+    "EVs": [4517.7,3063.6,4270.2,6014.1,6160.2,5275.1,5930.7,6474.8,6108.9,6811.1,6840.1,8139.8,7645.9,6505.1,6866.7,9101.6],
+    "Batteries": [6034.7,4448.7,6200.2,6603.3,6296.5,7060.1,7517.0,7616.5,7551.5,7381.0,7294.1,8066.2,7922.2,7175.7,10161.9,8422.0]
+  },
+  "regionsSolarMonthly": {
+    "Africa": [140.2,62.7,149.9,143.4,156.5,170.7,179.6,182.3,203.9,173.1,246.6,245.4,167.8,207.4,684.5,453.2],
+    "Middle East": [105.5,111.5,207.9,195.0,227.0,256.2,227.8,280.5,286.2,250.0,207.7,186.3,221.1,185.2,109.8,92.6]
+  },
+  "countries": [
+    {"name":"Netherlands","region":"Europe","solar_last12":3350.6},
+    {"name":"India","region":"Asia","solar_last12":2773.3},
+    {"name":"Indonesia","region":"Asia","solar_last12":1998.5},
+    {"name":"The Philippines","region":"Asia","solar_last12":1351.4},
+    {"name":"Brazil","region":"Latin America and Caribbean","solar_last12":1222.4},
+    {"name":"Pakistan","region":"Asia","solar_last12":1106.4},
+    {"name":"United Arab Emirates","region":"Middle East","solar_last12":942.0},
+    {"name":"Spain","region":"Europe","solar_last12":893.8},
+    {"name":"France","region":"Europe","solar_last12":845.4},
+    {"name":"Japan","region":"Asia","solar_last12":768.3},
+    {"name":"Greece","region":"Europe","solar_last12":741.7},
+    {"name":"Thailand","region":"Asia","solar_last12":733.8},
+    {"name":"Belgium","region":"Europe","solar_last12":722.6},
+    {"name":"Saudi Arabia","region":"Middle East","solar_last12":705.9},
+    {"name":"Viet Nam","region":"Asia","solar_last12":680.9},
+    {"name":"Australia","region":"Oceania","solar_last12":675.7},
+    {"name":"Lao PDR","region":"Asia","solar_last12":657.7},
+    {"name":"Slovenia","region":"Europe","solar_last12":653.4},
+    {"name":"South Korea","region":"Asia","solar_last12":642.6},
+    {"name":"Italy","region":"Europe","solar_last12":571.2},
+    {"name":"Poland","region":"Europe","solar_last12":507.8},
+    {"name":"Malaysia","region":"Asia","solar_last12":486.0},
+    {"name":"United Kingdom","region":"Europe","solar_last12":484.5},
+    {"name":"Türkiye","region":"Europe","solar_last12":434.4},
+    {"name":"Germany","region":"Europe","solar_last12":410.9},
+    {"name":"South Africa","region":"Africa","solar_last12":404.0},
+    {"name":"United States","region":"North America","solar_last12":393.0},
+    {"name":"Uzbekistan","region":"Asia","solar_last12":345.3},
+    {"name":"Nigeria","region":"Africa","solar_last12":335.9},
+    {"name":"Egypt","region":"Africa","solar_last12":300.6},
+    {"name":"Congo (DRC)","region":"Africa","solar_last12":252.2},
+    {"name":"Kenya","region":"Africa","solar_last12":250.4},
+    {"name":"Ethiopia","region":"Africa","solar_last12":240.8},
+    {"name":"Algeria","region":"Africa","solar_last12":183.3},
+    {"name":"Tanzania (the United Republic of)","region":"Africa","solar_last12":129.2},
+    {"name":"Morocco","region":"Africa","solar_last12":124.7},
+    {"name":"Ghana","region":"Africa","solar_last12":91.1},
+    {"name":"Zambia","region":"Africa","solar_last12":83.0},
+    {"name":"Mozambique","region":"Africa","solar_last12":69.0}
+  ],
+  "africaFocus": [
+    {"name":"Nigeria","feb26":17.8,"mar26":97.9,"apr26":69.5,"last12":335.9,"mar26_gw_est":0.979},
+    {"name":"Kenya","feb26":27.8,"mar26":94.4,"apr26":57.7,"last12":250.4,"mar26_gw_est":0.944},
+    {"name":"Ethiopia","feb26":11.8,"mar26":67.2,"apr26":58.2,"last12":240.8,"mar26_gw_est":0.672},
+    {"name":"South Africa","feb26":23.3,"mar26":69.3,"apr26":40.8,"last12":404.0,"mar26_gw_est":0.693},
+    {"name":"Congo (DRC)","feb26":9.8,"mar26":62.8,"apr26":55.5,"last12":252.2,"mar26_gw_est":0.628},
+    {"name":"Egypt","feb26":18.0,"mar26":42.0,"apr26":39.0,"last12":300.6,"mar26_gw_est":0.42}
+  ]
+}

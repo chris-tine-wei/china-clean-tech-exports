@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Pull: Why Europe Can't Stop Buying Chinese Batteries</title>
+  <meta name="description" content="Part 2 of China's Clean Tech Exports: why Europe is the world's biggest buyer of Chinese batteries and EVs. A grid on sun and wind needs storage. Built on Ember data." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The Pull: Why Europe Can't Stop Buying Chinese Batteries" />
+  <meta property="og:description" content="Wind and solar just passed fossil fuels across the EU. A grid on sun and wind needs storage, and that is the pull behind China's clean-tech exports." />
+  <meta property="og:url" content="https://chris-tine-wei.github.io/china-clean-tech-exports/demand.html" />
+  <meta property="og:image" content="https://chris-tine-wei.github.io/china-clean-tech-exports/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Pull: Why Europe Can't Stop Buying Chinese Batteries" />
+  <meta name="twitter:description" content="Part 2 of China's Clean Tech Exports, built on Ember data." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://api.mapbox.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+</head>
+<body class="demand-body">
+  <script>try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('d-cine');}catch(e){}</script>
+  <canvas id="d-stars" class="d-stars" aria-hidden="true"></canvas>
+  <div class="d-aurora" aria-hidden="true"></div>
+
+  <div class="titlebar">
+    <a class="titlebar-back" href="index.html">&larr; Part 1</a>
+    <b>The Pull</b> <span class="titlebar-sub">&nbsp;·&nbsp; Part 2 of 2</span>
+  </div>
+
+  <!-- 1 · GLOBE HERO (leads the page, echoing Part 1) -->
+  <section class="d-hero-map">
+    <div id="map" role="img" aria-label="Globe zoomed to Europe with glowing arcs showing China's battery exports to European countries. Click a country point to open its detail."></div>
+    <div id="map-tooltip" aria-hidden="true"></div>
+    <div class="d-hero-copy">
+      <p class="d-eyebrow">Part 2 · The Pull</p>
+      <h1>Europe banned Russian gas.<br/>It runs on <span class="glow">Chinese batteries</span> instead.</h1>
+      <p class="d-standfirst">Wind and solar just passed fossil fuels on Europe's grid. A grid that runs on sun and wind needs a way to store power for later. That is why Europe buys so many batteries. <b>Click a country</b> to see how much it buys.</p>
+      <div class="scroll-cue">Scroll<span>&darr;</span></div>
+    </div>
+    <div class="d-hero-hint" aria-hidden="true">
+      <span class="dh-line"><span class="dh-ic">⤿</span> Drag to spin the globe</span>
+      <span class="dh-line"><span class="dh-ic">◎</span> Click a country for its imports</span>
+    </div>
+  </section>
+
+  <article class="demand">
+
+    <!-- 2 · THE BUYERS (right after the map) -->
+    <section class="d-section d-reveal">
+      <p class="d-kicker">Who's buying</p>
+      <h2>The nine biggest buyers</h2>
+      <p class="d-lede">These nine countries buy the most Chinese batteries in Europe. Each one is cleaning up its power grid in its own way. Click a country here, or on the globe above, to see the numbers.</p>
+      <div id="ex-grid" class="ex-grid" aria-label="European battery buyers, ranked by Chinese battery imports"></div>
+    </section>
+
+    <!-- 3 · WHY THEY BUY (the day chart) -->
+    <section class="d-section d-reveal">
+      <p class="d-kicker">The reason</p>
+      <h2>Why Europe needs the batteries</h2>
+      <p class="d-lede">Solar is strongest at noon. People use the most power in the evening. Batteries store the extra midday sun and give it back after dark, so gas plants can stay off. <strong>Drag through one day</strong> to watch it happen.</p>
+
+      <div id="daygrid" class="daygrid">
+        <span class="dg-tag">Example day</span>
+        <div class="dg-stage">
+          <canvas id="dg-canvas" role="img" aria-label="A simple picture of one clear day on the EU grid. Solar peaks at midday. Power use peaks in the evening. A battery charges from the extra midday sun and gives it back at night."></canvas>
+          <div class="dg-gauge" aria-hidden="true">
+            <div class="dg-batt"><i id="dg-batt-fill"></i><span class="dg-batt-bolt">&#9889;</span></div>
+            <span class="dg-batt-pct" id="dg-batt-pct">0%</span>
+            <span class="dg-batt-state" id="dg-batt-state">Battery</span>
+          </div>
+        </div>
+
+        <div class="dg-controls">
+          <button id="dg-play" class="dg-play" type="button" aria-label="Play the day">&#9654;</button>
+          <input id="dg-slider" class="dg-slider" type="range" min="0" max="23" value="12" step="1" aria-label="Hour of the day" />
+          <span class="dg-time" id="dg-time">12 PM</span>
+        </div>
+        <p class="dg-narr" id="dg-narr"></p>
+        <p class="dg-caption">A simple picture of one clear day, not exact data. It shows the shape: solar peaks at midday, power use peaks in the evening. In 2025, wind and solar passed fossil fuels on the EU grid for the first time (<b>30%</b> vs <b>29%</b>). Pattern from <a href="https://ember-energy.org/latest-insights/european-electricity-review-2026/" target="_blank" rel="noopener">Ember</a>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · THE CLOSE -->
+    <section class="d-section d-reveal d-close">
+      <p class="d-kicker">The bigger picture</p>
+      <h2>One dependence traded for another</h2>
+      <p>For years, Europe's biggest energy weakness was Russian gas. In late 2025 the EU agreed to cut it off by 2027. The replacement is a grid built on wind, solar, and batteries. A lot of that hardware comes from one place: China.</p>
+      <p>The trade shows it. Europe put tariffs of <span class="stat">up to 35%</span> on Chinese electric cars. But the batteries that run its grid come in with no such tax, and those imports jumped about <span class="stat">51%</span> in 2025. It is a new kind of dependence. Cheaper, cleaner, spread across millions of cells. But a dependence all the same.</p>
+      <div class="hire">
+        <p class="hire-lead">Work with me</p>
+        <h3 class="hire-headline">Turn complexity into clarity.</h3>
+        <p class="hire-copy">I help organizations transform complex environmental and spatial data into maps and interactive stories that inform decisions, secure support, and inspire action.</p>
+        <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="hire-form">
+          <input type="hidden" name="form-name" value="contact" />
+          <p class="hf-hp"><label>Leave this empty: <input name="bot-field" /></label></p>
+          <div class="hf-row">
+            <input type="text" name="name" placeholder="Your name" required />
+            <input type="email" name="email" placeholder="Your email" required />
+          </div>
+          <textarea name="message" rows="3" placeholder="Tell me about your project" required></textarea>
+          <button type="submit" class="cta cta-primary hf-send">Let's build something meaningful &rarr;</button>
+        </form>
+        <p class="hire-alt">or <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">connect on LinkedIn</a></p>
+      </div>
+
+      <div class="cta-row">
+        <a class="cta cta-secondary" href="index.html">&larr; Back to Part 1: The Flow</a>
+        <a class="cta cta-secondary" href="https://ember-energy.org/latest-insights/european-electricity-review-2026/" target="_blank" rel="noopener">Read the Ember review &rarr;</a>
+      </div>
+      <p class="d-fineprint">Sources: <a href="https://ember-energy.org/latest-insights/european-electricity-review-2026/" target="_blank" rel="noopener">Ember, European Electricity Review 2026</a>; <a href="https://ember-energy.org/data/china-cleantech-export-data/" target="_blank" rel="noopener">Ember, China Cleantech Export Data</a> (import values); European Commission (EV tariffs). CC-BY-4.0.</p>
+      <p class="byline">By <a href="https://www.linkedin.com/in/christine-peng/" target="_blank" rel="noopener">Christine Peng</a> &nbsp;·&nbsp; built with Mapbox GL and vanilla JS</p>
+    </section>
+
+  </article>
+
+  <!-- floating detail panel, shared by the globe and the grid -->
+  <aside id="country-panel" class="country-panel" hidden aria-live="polite"></aside>
+
+  <div id="token-warn">
+    <div class="box">
+      <h3>Add your Mapbox token</h3>
+      <p>The globe needs a free Mapbox access token. Open <code>demand.js</code> and set
+      <code>MAPBOX_TOKEN</code> to your public token (starts with <code>pk.</code>). The rest of the page works without it.</p>
+    </div>
+  </div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+  <script src="demand.js"></script>
+</body>
+</html>
