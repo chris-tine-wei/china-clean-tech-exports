@@ -7,7 +7,7 @@
 
 An interactive globe of China's clean-tech exports — animated arcs, embedded charts, and a 16-month timeline you can scrub through. Built to tell a specific story: in March 2026, China's solar exports to Africa tripled in a single month. This is what that looks like.
 
-**[→ Open the live map](https://chris-tine-wei.github.io/china-clean-tech-exports/)** · **[→ Watch the walkthrough](https://www.youtube.com/watch?v=tYnyAamblSo)**
+**[→ Open the live map](https://chris-tine-wei.github.io/china-clean-tech-exports/)** 
 
 ---
 
